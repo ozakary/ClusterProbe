@@ -2,8 +2,9 @@
 """
 Cluster Sanity Check Script
 
-This script analyzes the local environment around Xenon atoms in cluster structures
-and flags anomalous clusters based on coordination number thresholds.
+This script analyzes the local environment around Xenon atoms in cluster structures,
+flags anomalous clusters based on coordination number thresholds, and extracts
+isotropic magnetic shielding values from mpshift.out files.
 
 Usage:
     python cluster_sanity_check.py [options]
@@ -14,6 +15,10 @@ Options:
     --sort_out_anomalies  Whether to move anomalous clusters to bad_seeds folder
                          (choices: yes/no, default: no)
     --base_dir PATH       Base directory containing cluster folders (default: .)
+
+Files analyzed:
+    - coord_*ClusterAroundXeNew.xyz: Cluster structure files
+    - mpshift.out: Isotropic magnetic shielding values (optional)
 """
 
 import os
@@ -21,6 +26,7 @@ import sys
 import argparse
 import shutil
 import glob
+import re
 from pathlib import Path
 import numpy as np
 from tqdm import tqdm
@@ -32,7 +38,7 @@ from ase.neighborlist import neighbor_list
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Analyze local environment around Xenon atoms in clusters",
+        description="Analyze local environment around Xenon atoms in clusters and extract isotropic magnetic shielding values",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__
     )
@@ -68,6 +74,41 @@ def parse_arguments():
     return parser.parse_args()
 
 
+def parse_mpshift_file(cluster_dir):
+    """
+    Parse the mpshift.out file to extract isotropic magnetic shielding values for Xe atoms.
+    
+    Args:
+        cluster_dir (str): Path to the cluster directory
+        
+    Returns:
+        list: List of isotropic values for Xe atoms, or empty list if file not found/parsing fails
+    """
+    mpshift_file = os.path.join(cluster_dir, "mpshift.out")
+    
+    if not os.path.exists(mpshift_file):
+        return []
+    
+    try:
+        isotropic_values = []
+        
+        with open(mpshift_file, 'r') as f:
+            for line in f:
+                # Look for lines containing Xe atom isotropic values
+                if re.search(r'ATOM\s+xe\s+\d+\s+ISOTROPIC:', line, re.IGNORECASE):
+                    # Extract the isotropic value using regex
+                    match = re.search(r'ISOTROPIC:\s+([-+]?\d+\.?\d*)', line)
+                    if match:
+                        isotropic_value = float(match.group(1))
+                        isotropic_values.append(isotropic_value)
+        
+        return isotropic_values
+        
+    except Exception as e:
+        print(f"Warning: Could not parse mpshift.out in {cluster_dir}: {str(e)}")
+        return []
+
+
 def find_cluster_files(base_dir):
     """Find all cluster XYZ files in the directory structure."""
     pattern = os.path.join(base_dir, "cluster_*/coord_*ClusterAroundXeNew.xyz")
@@ -91,11 +132,17 @@ def analyze_cluster(xyz_file, rcut, min_neighbors):
     Analyze a single cluster file.
     
     Returns:
-        dict: Analysis results containing cluster info and neighbor counts
+        dict: Analysis results containing cluster info, neighbor counts, and isotropic values
     """
     try:
         # Read the cluster structure
         atoms = read(xyz_file)
+        
+        # Get cluster directory for mpshift.out file
+        cluster_dir = os.path.dirname(xyz_file)
+        
+        # Parse isotropic magnetic shielding values
+        isotropic_values = parse_mpshift_file(cluster_dir)
         
         # Find Xenon atoms
         xe_indices = [i for i, symbol in enumerate(atoms.get_chemical_symbols()) if symbol == 'Xe']
@@ -108,6 +155,7 @@ def analyze_cluster(xyz_file, rcut, min_neighbors):
                 'n_atoms': len(atoms),
                 'n_xe': 0,
                 'xe_neighbors': [],
+                'isotropic_values': [],
                 'is_anomalous': True
             }
         
@@ -155,6 +203,7 @@ def analyze_cluster(xyz_file, rcut, min_neighbors):
             'n_atoms': len(atoms),
             'n_xe': len(xe_indices),
             'xe_neighbors': xe_neighbor_counts,
+            'isotropic_values': isotropic_values,
             'xe_detailed_info': xe_detailed_info,
             'is_anomalous': is_anomalous,
             'atoms': atoms  # Keep for potential further analysis
@@ -168,6 +217,7 @@ def analyze_cluster(xyz_file, rcut, min_neighbors):
             'n_atoms': 0,
             'n_xe': 0,
             'xe_neighbors': [],
+            'isotropic_values': [],
             'is_anomalous': True
         }
 
@@ -244,13 +294,24 @@ def print_summary_statistics(results, rcut, min_neighbors):
     
     # Coordination analysis
     all_neighbor_counts = []
+    all_isotropic_values = []
     for r in good_results:
         all_neighbor_counts.extend(r['xe_neighbors'])
+        all_isotropic_values.extend(r['isotropic_values'])
     
     print(f"Xenon Coordination Analysis:")
     print(f"  - Total Xe atoms analyzed: {len(all_neighbor_counts)}")
     print(f"  - Coordination numbers: {min(all_neighbor_counts)} - {max(all_neighbor_counts)} "
           f"(avg: {np.mean(all_neighbor_counts):.1f} ± {np.std(all_neighbor_counts):.1f})")
+    
+    if all_isotropic_values:
+        print(f"  - Isotropic shielding: {min(all_isotropic_values):.1f} - {max(all_isotropic_values):.1f} ppm "
+              f"(avg: {np.mean(all_isotropic_values):.1f} ± {np.std(all_isotropic_values):.1f})")
+        clusters_with_isotropic = sum(1 for r in good_results if r['isotropic_values'])
+        print(f"  - Clusters with isotropic data: {clusters_with_isotropic}/{len(good_results)} "
+              f"({100*clusters_with_isotropic/len(good_results):.1f}%)")
+    else:
+        print(f"  - Isotropic shielding data: Not available")
     print()
     
     # Anomaly statistics
@@ -269,8 +330,15 @@ def print_summary_statistics(results, rcut, min_neighbors):
             cluster_name = os.path.basename(os.path.dirname(r['file']))
             neighbor_counts = r['xe_neighbors']
             min_neighbors_in_cluster = min(neighbor_counts) if neighbor_counts else 0
+            
+            # Include isotropic values if available
+            if r['isotropic_values']:
+                isotropic_str = f", Isotropic: {r['isotropic_values']}"
+            else:
+                isotropic_str = ""
+            
             print(f"  - {cluster_name}: Xe coordination = {neighbor_counts} "
-                  f"(min: {min_neighbors_in_cluster})")
+                  f"(min: {min_neighbors_in_cluster}){isotropic_str}")
     
     print("\n" + "="*80)
 
@@ -310,17 +378,27 @@ def main():
     
     # Print detailed results
     print("\nDetailed Results:")
-    print("-" * 80)
+    print("-" * 120)
+    print(f"{'Cluster':<15} | {'Atoms':<5} | {'Xe':<2} | {'Neighbors':<20} | {'Isotropic Shielding':<25} | {'Status'}")
+    print("-" * 120)
     for result in results:
         cluster_name = os.path.basename(os.path.dirname(result['file']))
         
         if result['success']:
             status = "ANOMALOUS" if result['is_anomalous'] else "GOOD"
             neighbors_str = ", ".join(map(str, result['xe_neighbors']))
-            print(f"{cluster_name:15} | {result['n_atoms']:4d} atoms | "
-                  f"{result['n_xe']} Xe | Neighbors: [{neighbors_str:15}] | {status}")
+            
+            # Format isotropic values
+            if result['isotropic_values']:
+                isotropic_str = ", ".join([f"{val:.1f}" for val in result['isotropic_values']])
+            else:
+                isotropic_str = "N/A"
+            
+            print(f"{cluster_name:<15} | {result['n_atoms']:4d} | {result['n_xe']} | "
+                  f"[{neighbors_str:<18}] | [{isotropic_str:<23}] | {status}")
         else:
-            print(f"{cluster_name:15} | ERROR: {result['error']}")
+            print(f"{cluster_name:<15} | ERROR: {result['error']}")
+    print("-" * 120)
     
     # Print summary statistics
     print_summary_statistics(results, args.rcut, args.num_atoms)
