@@ -48,12 +48,15 @@ Your cluster files should be organized as follows:
 base_directory/
 ├── cluster_1/
 │   ├── coord_1ClusterAroundXeNew.xyz
+│   ├── mpshift.out
 │   └── [other cluster files...]
 ├── cluster_2/
 │   ├── coord_2ClusterAroundXeNew.xyz
+│   ├── mpshift.out
 │   └── [other cluster files...]
 ├── cluster_N/
 │   ├── coord_NClusterAroundXeNew.xyz
+│   ├── mpshift.out
 │   └── [other cluster files...]
 └── [script files]
 ```
