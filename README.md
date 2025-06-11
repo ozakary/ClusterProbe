@@ -106,19 +106,16 @@ tqdm>=4.60.0
 
 ### Basic Usage
 ```bash
-python cluster_sanity_check.py
+python cluster_sanity_check.py --base_dir ./path/to/cluster/folders/
 ```
 
 ### Advanced Usage
 ```bash
 # Custom parameters
-python cluster_sanity_check.py --rcut 5.5 --num_atoms 8
+python cluster_sanity_check.py --rcut 5.5 --num_atoms 8 --base_dir ./path/to/cluster/folders/
 
 # With anomaly sorting
-python cluster_sanity_check.py --rcut 6.0 --num_atoms 10 --sort_out_anomalies yes
-
-# Specify different directory
-python cluster_sanity_check.py --base_dir /path/to/clusters --sort_out_anomalies yes
+python cluster_sanity_check.py --rcut 6.0 --num_atoms 10 --sort_out_anomalies yes --base_dir ./path/to/cluster/folders/
 ```
 
 ### Command Line Parameters
@@ -259,27 +256,6 @@ For detailed debugging, modify the script to include:
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
-
-## 📚 Examples and Tutorials
-
-### Example 1: Default Quality Check
-```bash
-# Check all clusters with default parameters
-python cluster_sanity_check.py
-```
-
-### Example 2: Advanced Quality Control
-```bash
-# Use smaller cutoff and higher coordination requirement
-python cluster_sanity_check.py --rcut 5 --num_atoms 10 --base_dir ./path/to/cluster/folders/
-```
-
-### Example 3: Advanced Quanlity Control with Automated Cleanup
-```bash
-# Identify and isolate bad clusters automatically
-python cluster_sanity_check.py --rcut 5 --num_atoms 10 --base_dir ./path/to/cluster/folders/ --sort_out_anomalies yes
-```
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
