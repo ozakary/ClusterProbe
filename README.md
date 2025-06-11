@@ -71,8 +71,12 @@ H      9.283990000   15.473600000   20.973700000
 
 ## 🛠️ Installation
 
-### Method 1: Direct Installation
+### Method 1: Direct Installation (Recommended)
 ```bash
+# Create a Python virtual environment where all packages will be installed
+python -m venv cluster_probe_env
+source cluster_probe_env/bin/activate
+
 # Clone the repository
 git clone https://github.com/ozakary/ClusterProbe.git
 cd ClusterProbe
