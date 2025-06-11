@@ -74,8 +74,8 @@ H      9.283990000   15.473600000   20.973700000
 ### Method 1: Direct Installation
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/cluster-sanity-check.git
-cd cluster-sanity-check
+git clone https://github.com/ozakary/ClusterProbe.git
+cd ClusterProbe
 
 # Install dependencies
 pip install -r requirements.txt
@@ -256,50 +256,24 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-### Development Setup
-```bash
-git clone https://github.com/yourusername/cluster-sanity-check.git
-cd cluster-sanity-check
-pip install -e .
-```
-
-### Running Tests
-```bash
-python -m pytest tests/
-```
-
 ## 📚 Examples and Tutorials
 
-### Example 1: Basic Quality Check
+### Example 1: Default Quality Check
 ```bash
 # Check all clusters with default parameters
 python cluster_sanity_check.py
 ```
 
-### Example 2: Strict Quality Control
+### Example 2: Advanced Quality Control
 ```bash
 # Use smaller cutoff and higher coordination requirement
-python cluster_sanity_check.py --rcut 5.0 --num_atoms 12
+python cluster_sanity_check.py --rcut 5 --num_atoms 10 --base_dir ./path/to/cluster/folders/
 ```
 
-### Example 3: Automated Cleanup
+### Example 3: Advanced Quanlity Control with Automated Cleanup
 ```bash
 # Identify and isolate bad clusters automatically
-python cluster_sanity_check.py --sort_out_anomalies yes
-```
-
-### Example 4: Custom Analysis
-```python
-# Python script usage
-from cluster_sanity_check import analyze_cluster
-
-result = analyze_cluster('cluster_1/coord_1ClusterAroundXeNew.xyz', 
-                        rcut=6.0, min_neighbors=10)
-print(f"Coordination numbers: {result['xe_neighbors']}")
+python cluster_sanity_check.py --rcut 5 --num_atoms 10 --base_dir ./path/to/cluster/folders/ --sort_out_anomalies yes
 ```
 
 ## 📄 License
@@ -317,19 +291,6 @@ If you encounter any issues or have questions:
    - Complete error message
    - Sample input files (if possible)
 
-## 📖 Citation
-
-If you use this tool in your research, please cite:
-
-```bibtex
-@software{cluster_sanity_check,
-  author = {Your Name},
-  title = {Cluster Sanity Check: A Tool for Xenon Coordination Analysis},
-  year = {2025},
-  url = {https://github.com/yourusername/cluster-sanity-check}
-}
-```
-
 ## 🗺️ Roadmap
 
 - [ ] Support for other noble gases (Kr, Ar, etc.)
@@ -338,7 +299,3 @@ If you use this tool in your research, please cite:
 - [ ] Parallel processing for large datasets
 - [ ] Web interface for remote analysis
 - [ ] Integration with molecular dynamics workflows
-
----
-
-**Made with ❤️ for the computational chemistry community**
