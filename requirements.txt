@@ -1,0 +1,32 @@
+# Core dependencies for Cluster Sanity Check
+# ==========================================
+
+# Atomic Simulation Environment - for reading molecular structures and distance calculations
+ase>=3.20.0
+
+# NumPy - for numerical operations and array handling
+numpy>=1.19.0
+
+# tqdm - for progress bars and user feedback
+tqdm>=4.60.0
+
+# Optional dependencies for enhanced functionality
+# ===============================================
+
+# Matplotlib - for potential future visualization features
+# matplotlib>=3.3.0
+
+# Pandas - for advanced data analysis and export options
+# pandas>=1.2.0
+
+# SciPy - for advanced statistical analysis
+# scipy>=1.6.0
+
+# Development dependencies (uncomment for development)
+# ===================================================
+
+# pytest>=6.0.0              # For testing
+# pytest-cov>=2.10.0         # For test coverage
+# black>=21.0.0               # For code formatting
+# flake8>=3.8.0               # For code linting
+# mypy>=0.800                 # For type checking
