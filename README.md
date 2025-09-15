@@ -15,7 +15,7 @@
 ---
 A Python tool for analyzing the local environment around Xenon atoms in molecular clusters and identifying anomalous structures based on coordination number thresholds.
 
-## 🔬 Overview
+## Overview
 
 This tool is designed to perform sanity checks on molecular cluster structures containing Xenon atoms. It analyzes the local coordination environment of Xenon atoms by:
 
@@ -24,7 +24,7 @@ This tool is designed to perform sanity checks on molecular cluster structures c
 - Identifying clusters with anomalously low coordination numbers
 - Optionally isolating problematic clusters for further investigation
 
-## 🚀 Features
+## Features
 
 - **Automated Structure Analysis**: Processes multiple cluster files automatically
 - **Flexible Parameters**: Customizable cutoff radius and coordination thresholds
@@ -34,7 +34,7 @@ This tool is designed to perform sanity checks on molecular cluster structures c
 - **File Management**: Optional sorting of anomalous clusters
 - **ASE Integration**: Leverages the Atomic Simulation Environment for distance calculations
 
-## 📋 Requirements
+## Requirements
 
 ### Dependencies
 - Python 3.7+
@@ -72,7 +72,7 @@ H      9.283990000   15.473600000   20.973700000
 ...
 ```
 
-## 🛠️ Installation
+## Installation
 
 ### Method 1: Direct Installation (Recommended)
 ```bash
@@ -105,7 +105,7 @@ numpy>=1.19.0
 tqdm>=4.60.0
 ```
 
-## 📖 Usage
+## Usage
 
 ### Basic Usage
 ```bash
@@ -135,7 +135,7 @@ python cluster_sanity_check.py --rcut 6.0 --num_atoms 10 --sort_out_anomalies ye
 python cluster_sanity_check.py --help
 ```
 
-## 📊 Output Examples
+## Output Examples
 
 ### Console Output
 ```
@@ -197,7 +197,7 @@ base_directory/
     └── cluster_15/
 ```
 
-## 🔧 Algorithm Details
+## Algorithm Details
 
 ### Coordination Analysis Process
 
@@ -223,13 +223,13 @@ base_directory/
 - **Self-Exclusion**: Xenon atoms don't count themselves as neighbors
 - **Error Resilience**: Continues processing even if individual clusters fail
 
-## 📈 Performance
+## Performance
 
 - **Processing Speed**: ~3-5 clusters/second (depends on cluster size)
 - **Memory Usage**: Minimal - processes one cluster at a time
 - **Scalability**: Tested with 1000+ clusters without issues
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -259,11 +259,11 @@ For detailed debugging, modify the script to include:
 import logging
 logging.basicConfig(level=logging.DEBUG)
 ```
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+## Support
 
 If you encounter any issues or have questions:
 
