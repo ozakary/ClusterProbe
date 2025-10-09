@@ -107,7 +107,12 @@ tqdm>=4.60.0
 
 ## Usage
 
-### Basic Usage
+### Basic Usage (with NMR tensor)
+```bash
+python cluster_sanity_check.py --base_dir ./path/to/cluster/folders/
+```
+
+### Basic Usage (without NMR tensor)
 ```bash
 python cluster_sanity_check.py --base_dir ./path/to/cluster/folders/
 ```
