@@ -114,7 +114,7 @@ python cluster_sanity_check.py --base_dir ./path/to/cluster/folders/
 
 ### Basic Usage (without NMR tensor)
 ```bash
-python cluster_sanity_check.py --base_dir ./path/to/cluster/folders/
+python cluster_sanity_check_no-nmr.py --base_dir ./path/to/cluster/folders/
 ```
 
 ### Advanced Usage
@@ -138,6 +138,7 @@ python cluster_sanity_check.py --rcut 6.0 --num_atoms 10 --sort_out_anomalies ye
 ### Help
 ```bash
 python cluster_sanity_check.py --help
+python cluster_sanity_check_no-nmr.py --help
 ```
 
 ## Output Examples
